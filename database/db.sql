@@ -15,7 +15,7 @@ CREATE TABLE users (
 CREATE OR REPLACE FUNCTION update_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN
-  NEW.update_at = NOW();
+  NEW.updated_at = NOW();
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -26,8 +26,6 @@ FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
 
 -- Creación de items
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -36,11 +34,12 @@ CREATE TABLE products (
   price NUMERIC(10, 2) NOT NULL,
   category VARCHAR(255) NOT NULL,
   brand VARCHAR(255) NOT NULL,
-  sku UUID  NOT NULL uuid_generate_v4(),
+  sku UUID NOT NULL DEFAULT uuid_generate_v4(),
   image TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
 CREATE OR REPLACE FUNCTION update_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -48,3 +47,8 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_products_timestamp
+BEFORE UPDATE ON products
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();

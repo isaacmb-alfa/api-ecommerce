@@ -1,7 +1,10 @@
 import pg from 'pg';
-import {config} from 'dotenv';
+import dotenv from 'dotenv';
 
-const dataBaseURI = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/database';
+dotenv.config(); 
+
+const dataBaseURI = process.env.DATABASE_URL
+    // || 'postgresql://user:password@localhost:5432/database';
 
 
 const { Pool } = pg;
@@ -14,5 +17,6 @@ const { Pool } = pg;
 // });
 
 export const pool = new Pool({
-    connectionString: dataBaseURI  
+    connectionString: dataBaseURI,
+    // ssl: true
 })
